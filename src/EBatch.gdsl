@@ -1,0 +1,134 @@
+import groovy.json.JsonSlurperClassic
+import groovy.json.JsonOutput
+
+def doBatch(bName, bJson, bSaveJson, bTriggerJob, bSaveOnly, bCamera, bFocuser, bFilterWheel){
+    Map bConfig
+    String  fileNameB
+    fileNameB = bName.replaceAll("#\\d+","")
+
+    if(bJson){
+        bConfig = new JsonSlurperClassic().parseText(bJson.toString()) as Map
+        if("${bSaveJson}" == 'true'){
+            echo "DEBUG: ${env.bJson}"
+            saveJson("${fileNameB}.json", bJson.toString())
+        }
+    }else if(fileExists("${fileNameB}.json")){
+        bConfig = loadJson("${fileNameB}.json")
+    }else if(fileExists("./uploadBatch.json")){
+        echo "use config from uploadBatch.json"
+        bConfig = loadJson("./uploadBatch.json")
+        if("${bSaveJson}" == 'true'){
+            saveJson("${bConfig.name ?: fileNameB}.json",bConfig)
+        }
+    }else{
+        echo "no batch configuration defined"
+        return
+    }
+
+    stage("Expose $bTriggerJob"){
+        echo 'prepare Batch'
+        echo "Select Filter: $bConfig.filter on $bFilterWheel"
+        echo "Set Focus offset: $bConfig.focus on $bFocuser"
+    }
+    if("${bSaveOnly}" == 'true'){
+        //stage("Exposure: SKIPED}"){
+        echo 'stage skiped by bSaveOnly: true'
+        script {
+            currentBuild.displayName = "#${BUILD_NUMBER} ${bName} Save Only"
+            currentBuild.description = "${bTriggerJob}"
+        }
+        //}
+    }else{
+
+        script {
+            currentBuild.displayName = "#${BUILD_NUMBER} ${bName}"
+            currentBuild.description = "${bTriggerJob}"
+        }
+        if(bConfig.file){
+            if(fileExists("${bConfig.file.replace('\\.json','')}.json")){
+                def tempConfig = loadJson("${bConfig.file.replace('\\.json','')}.json")
+                if(sConfig.name) tempConfig.name = sConfig.name
+                if(sConfig.repeat) tempConfig.repeat = sConfig.repeat
+                if(sConfig.filter) tempConfig.filter = sConfig.filter
+                if(sConfig.bulp) tempConfig.bulp = sConfig.bulp
+                if(sConfig.type) tempConfig.type = sConfig.type
+                if(sConfig.gain) tempConfig.gain = sConfig.gain
+                if(sConfig.offset) tempConfig.offset = sConfig.offset
+                if(sConfig.delay) tempConfig.delay = sConfig.delay
+                if(sConfig.focus) tempConfig.focus = sConfig.focus
+                if(sConfig.drift) tempConfig.dizzle = sConfig.dizzle
+                if(sConfig.drift) tempConfig.binning = sConfig.binning
+            }
+        }
+        for (int i = 1; (bConfig.repeat as Integer) >= i as int; i++){
+            script {
+                currentBuild.description = "${bTriggerJob} [${bName}#${i} of ${bConfig.repeat}]"
+            }
+            String fileName
+            if(bConfig.name){
+                if(bConfig.name == 'generic'){
+                    fileName = "${bConfig.type}_t${bConfig.bulp}_g${bConfig.gain}_o${bConfig.offset}_b${bConfig.binning}_${BUILD_NUMBER}_${i.toString().padLeft(6,'0')}"
+                }else{
+                    fileName = "${bConfig.name}_${BUILD_NUMBER}_${i.toString().padLeft(6,'0')}"
+                }
+            }
+            else{
+                fileName = "${bName}_${BUILD_NUMBER}_${i.toString().padLeft(6,'0')}"
+            }
+            doExpose(bConfig.bulp, bConfig.binning, bConfig.gain, bConfig.offset, bCamera, bConfig.type, fileName, 1, bName )
+        }
+        echo 'finalize batch'
+        echo "Reset Focus offset: $bConfig.focus on $bFocuser"
+    }
+}
+
+def doExpose(eBulp, eBin, eGain, eOffset, eCamera, eType, eName, eCount, eTriggerJob, flagChgBuildName = true){
+    String fileName
+    fileName = eName.replaceAll("#\\d+","")
+    script {
+        currentBuild.displayName = "#${BUILD_NUMBER} ${eName}"
+    }
+
+    stage("Init $eName"){
+        echo 'prepare Job'
+    }
+    for ( int i = 1; i <= eCount.toInteger(); i++){
+        stage("Expose:${i}") {
+
+            echo "dummy Expose: bulp=${eBulp}, binning=${eBin}, gain=${eGain}, offset=${eOffset}, camera=${eCamera}"
+            echo "dummy Copy; ${eType}/${fileName}${i}.fits"
+            dir("./${eType}"){
+                writeFile file: "${fileName}${i}.fits", text: "DUMMY FITS"
+            }
+        }
+    }
+    stage("Finish eName"){
+        echo 'finish Job'
+    }
+}
+
+Map loadJson(String name){
+    String jsonText = readFile(name)
+    return new JsonSlurperClassic().parseText(jsonText) as Map
+}
+def saveJson(String name, Map jsonObj){
+    saveJson(name,JsonOutput.prettyPrint(JsonOutput.toJson(jsonObj)))
+}
+def saveJson(String name, String jsonText){
+    writeFile file: name, text: jsonText
+}
+
+if(env.NODE_NAME){
+    echo "running on $env.NODE_NAME"
+    doBatch(env.bName, env.bJson, env.bSaveJson, env.bTriggerJob, env.bSaveOnly, env.bCamera, env.bFocuser, env.bFilterwheel)
+    stage("write artifacts"){
+        archiveArtifacts('*.json')
+    }
+}else{
+    node{
+        doBatch(env.bName, env.bJson, env.bSaveJson, env.bTriggerJob, env.bSaveOnly, env.bCamera, env.bFocuser, env.bFilterwheel)
+        stage("write artifacts"){
+            archiveArtifacts('*.json')
+        }
+    }
+}

@@ -1,0 +1,77 @@
+import groovy.json.JsonSlurperClassic
+import groovy.json.JsonOutput
+
+def doSequence(sName, sJson, sCount, sSaveJson, sSaveOnly){
+    Map sConfig
+    node{
+        if(env.sJson){
+            sConfig = new JsonSlurperClassic().parseText(env.sJson.toString()) as Map
+            if("${env.sSaveJson}" == 'true'){
+                echo "DEBUG: ${env.sJson}"
+                saveJson("${sConfig.name}.json", env.sJson.toString())
+            }
+        }else if(fileExists("${env.sName}.json")){
+            sConfig = loadJson("${env.sName}.json")
+        }else if(fileExists("./upload.json")){
+            echo "use config from upload.json"
+            sConfig = loadJson("./upload.json")
+        }else{
+            echo "no batches defined"
+            return
+        }
+        println(sConfig)
+
+        script {
+            currentBuild.displayName = "#${BUILD_NUMBER} ${env.sName}"
+            //currentBuild.description = "#${BUILD_NUMBER} (v${env.VERSION})"
+        }
+        stage('Preparation'){
+            echo "prepare Job"
+            echo "goto: ${sConfig?.init?.goto ?: false} target ${sConfig?.init?.object ?: ''}"
+            if(sSaveOnly){
+                echo "cooling skiped by SaveOnly: true"
+            }else{
+                echo "cooling: ${sConfig?.init?.cooler ?: false} on ${sConfig?.init?.temp ?: '0'}"
+            }
+            echo "focussing: ${sConfig?.init?.autofocus ?: false} on ${sConfig?.init?.focuser ?: ''}"
+            echo "plate solvingg: ${sConfig?.init?.platesolve ?: false}"
+            echo "auto guiding: ${sConfig?.init?.autoguide ?: false} with  ${sConfig?.init?.guider ?: ''}"
+            echo "start guiding"
+        }
+        for ( int i = 1; i <= sCount.toInteger(); i++){
+            stage("Run#${i}"){
+                (sConfig.sequence as List).each {
+                    echo "${it}"
+                    println(sConfig.batch)
+                    def rBuild = sConfig.batch["${it}"]
+                    println(rBuild)
+                    if(['DARK','BIAS','FLAT','FLATBIAS','LIGHT'].contains(rBuild.type)){
+                        build job: 'EBatch', parameters: [string(name: 'bTriggerJob', value: "S:${env.sName}#${i}"),
+                                                          string(name: 'bName', value: "${it}#${i}"),
+                                                          string(name: 'bCamera', value: "${sConfig.init?.camera ?: 'ZWO ASI533C Pro'}"),
+                                                          string(name: 'bFocuser', value: "${sConfig.init?.focuser ?: 'ASI EAF'}"),
+                                                          string(name: 'bFilterWheel', value: "${sConfig.init?.filterwheel ?: 'ASI EFW'}"),
+                                                          [$class: 'BooleanParameterValue', name: 'bSaveJson', value: env.sSaveJson],
+                                                          [$class: 'BooleanParameterValue', name: 'bSaveOnly', value: env.sSaveOnly],
+                                                          string(name: 'bJson', value: "${JsonOutput.toJson(rBuild)}"),
+                                                          string(name: 'bCount', value: "${rBuild?.repeat ?: 1}")]
+                    }
+                }
+            }
+        }
+
+        archiveArtifacts('*.json')
+    }
+}
+Map loadJson(String name){
+    def jsonText = readFile(name)
+    return new JsonSlurperClassic().parseText(jsonText) as Map
+}
+def saveJson(String name, Map jsonObj){
+    saveJson(name,JsonOutput.prettyPrint(JsonOutput.toJson(data)))
+}
+def saveJson(String name, String jsonText){
+    writeFile file: name, text: jsonText
+}
+
+doSequence(env.sName, env.sJson, env.sCount, env.sSaveJson, env.sSaveOnly)
