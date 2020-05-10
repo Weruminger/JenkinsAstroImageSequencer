@@ -46,21 +46,22 @@ def doBatch(bName, bJson, bSaveJson, bTriggerJob, bSaveOnly, bCamera, bFocuser, 
         }
         if(bConfig.file){
             if(fileExists("${bConfig.file.replace('\\.json','')}.json")){
-                def tempConfig = loadJson("${bConfig.file.replace('\\.json','')}.json")
-                if(sConfig.name) tempConfig.name = sConfig.name
-                if(sConfig.repeat) tempConfig.repeat = sConfig.repeat
-                if(sConfig.filter) tempConfig.filter = sConfig.filter
-                if(sConfig.bulp) tempConfig.bulp = sConfig.bulp
-                if(sConfig.type) tempConfig.type = sConfig.type
-                if(sConfig.gain) tempConfig.gain = sConfig.gain
-                if(sConfig.offset) tempConfig.offset = sConfig.offset
-                if(sConfig.delay) tempConfig.delay = sConfig.delay
-                if(sConfig.focus) tempConfig.focus = sConfig.focus
-                if(sConfig.drift) tempConfig.dizzle = sConfig.dizzle
-                if(sConfig.drift) tempConfig.binning = sConfig.binning
+                Map tempConfig = loadJson("${bConfig.file.replace('\\.json','')}.json") as Map
+                if(bConfig.name) tempConfig.name = bConfig.name
+                if(bConfig.repeat) tempConfig.repeat = bConfig.repeat
+                if(bConfig.filter) tempConfig.filter = bConfig.filter
+                if(bConfig.bulp) tempConfig.bulp = bConfig.bulp
+                if(bConfig.type) tempConfig.type = bConfig.type
+                if(bConfig.gain) tempConfig.gain = bConfig.gain
+                if(bConfig.offset) tempConfig.offset = bConfig.offset
+                if(bConfig.delay) tempConfig.delay = bConfig.delay
+                if(bConfig.focus) tempConfig.focus = bConfig.focus
+                if(bConfig.dizzle) tempConfig.dizzle = bConfig.dizzle
+                if(bConfig.binning) tempConfig.binning = bConfig.binning
+                bConfig = tempConfig
             }
         }
-        for (int i = 1; (bConfig.repeat as Integer) >= i as int; i++){
+        for (int i = 1; (bConfig.repeat as Integer) >= i ; i++){
             script {
                 currentBuild.description = "${bTriggerJob} [${bName}#${i} of ${bConfig.repeat}]"
             }

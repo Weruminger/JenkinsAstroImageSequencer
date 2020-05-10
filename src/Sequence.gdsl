@@ -45,7 +45,7 @@ def doSequence(sName, sJson, sCount, sSaveJson, sSaveOnly){
                     println(sConfig.batch)
                     def rBuild = sConfig.batch["${it}"]
                     println(rBuild)
-                    if(['DARK','BIAS','FLAT','FLATBIAS','LIGHT'].contains(rBuild.type)){
+                    if(['DARK','BIAS','FLAT','FLATBIAS','LIGHT'].contains(rBuild.type) || rBuild.file){
                         build job: 'EBatch', parameters: [string(name: 'bTriggerJob', value: "S:${env.sName}#${i}"),
                                                           string(name: 'bName', value: "${it}#${i}"),
                                                           string(name: 'bCamera', value: "${sConfig.init?.camera ?: 'ZWO ASI533C Pro'}"),
