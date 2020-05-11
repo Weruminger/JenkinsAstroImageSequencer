@@ -3,7 +3,7 @@ import javaposse.jobdsl.dsl.helpers.BuildParametersContext.*
 
 folder('AstroImager')
 pipelineJob('AstroImager/Sequence') {
-    properties([ parameters ([string('sName'.toString(), 'Default'.toString()),
+    properties([ parameters ([string("${'sName'}", "${'Default'}"),
                               text('sJson', '''{ "batch" : { "LIGHT_1_120_1-0" :  { "name" : "generic", "filter" : "CLS", "bulp" : 120, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
                    "LIGHT_3_180_1-0" :  { "name" : "generic",  "filter" : "DB", "bulp" : 180, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },    
                    "LIGHT_5_240_1-0" :  { "name" : "generic",  "filter" : "Ha", "bulp" : 240, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : -15, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
