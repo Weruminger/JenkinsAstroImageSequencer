@@ -2,8 +2,8 @@ import hudson.model.*
 
 folder('AstroImager')
 pipelineJob('AstroImager/Sequence') {
-    parameters {
-        string(name: 'sName', defaultValue: 'Default', description: '')
+    properties([ parameters ([string(defaultValue: 'Default', description: '', name: 'sName', trim: false),
+        string(name: 'sName', defaultValue: 'Default', description: ''),
         text(name: 'sJson', defaultValue: """{ "batch" : { "LIGHT_1_120_1-0" :  { "name" : "generic", "filter" : "CLS", "bulp" : 120, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
                    "LIGHT_3_180_1-0" :  { "name" : "generic",  "filter" : "DB", "bulp" : 180, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },    
                    "LIGHT_5_240_1-0" :  { "name" : "generic",  "filter" : "Ha", "bulp" : 240, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : -15, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
@@ -18,14 +18,12 @@ pipelineJob('AstroImager/Sequence') {
  "init" : { "object" : "none", "goto" : false, "platesolve" : true, "autofocus" : true, "autoguide" : true, "cooler" : true, "temp" : -15,
              "camera" : "ZWO ASI533C Pro", "focuser" : "ASI EAF", "filterwheel" : "ASI EFW",  "guider" : "indi_mgen" },
  "repeat" : 2
-}""", description: '')
-        file(filepath: './upload.json', description: '')
-        string(name: 'sCount', defaultValue: '1', description: '')
-        booleanParam(name: 'sSaveJson', defaultValue: false, description: '')
-        booleanParam(name: 'sSaveOnly', defaultValue: false, description: '')
-        // choice(name: 'CHOICES', choices: ['one', 'two', 'three'], description: '')
-    }
-
+}""", description: ''),
+        file(filepath: './upload.json', description: ''),
+        string(name: 'sCount', defaultValue: '1', description: ''),
+        booleanParam(name: 'sSaveJson', defaultValue: false, description: ''),
+        booleanParam(name: 'sSaveOnly', defaultValue: false, description: '')]),
+    disableConcurrentBuilds()])
     logRotator(5, -1, 1, -1)
 
     definition {
@@ -44,19 +42,18 @@ pipelineJob('AstroImager/Sequence') {
     }
 }
 pipelineJob('AstroImager/EBatch') {
-    parameters {
-        string(name: 'bName', defaultValue: 'Default', description: '')
-        string(name: 'bTriggerJob', defaultValue: 'Default', description: '')
-        text(name: 'bJson', defaultValue: '{"name" : "generic", "filter" : "CLS", "bulp" : 30, "gain" : 100, "offset" : 1, "focus" : 0, "binning" : 1, "dizzle" : true, "delay" : 1, "repeat" : 10, "type" : "LIGHT"  }', description: '')
-        file(filepath: './uploadBatch.json', description: '')
-        string(name: 'bCount', defaultValue: 'Default', description: '')
-        string(name: 'bFocuser', defaultValue: 'Default', description: '')
-        string(name: 'bFilterWheel', defaultValue: 'Default', description: '')
-        string(name: 'bCamera', defaultValue: 'Default', description: '')
-        booleanParam(name: 'bSaveJson', defaultValue: false, description: '')
+    properties([ parameters ([
+        string(name: 'bName', defaultValue: 'Default', description: ''),
+        string(name: 'bTriggerJob', defaultValue: 'Default', description: ''),
+        text(name: 'bJson', defaultValue: '{"name" : "generic", "filter" : "CLS", "bulp" : 30, "gain" : 100, "offset" : 1, "focus" : 0, "binning" : 1, "dizzle" : true, "delay" : 1, "repeat" : 10, "type" : "LIGHT"  }', description: ''),
+        file(filepath: './uploadBatch.json', description: ''),
+        string(name: 'bCount', defaultValue: 'Default', description: ''),
+        string(name: 'bFocuser', defaultValue: 'Default', description: ''),
+        string(name: 'bFilterWheel', defaultValue: 'Default', description: ''),
+        string(name: 'bCamera', defaultValue: 'Default', description: ''),
+        booleanParam(name: 'bSaveJson', defaultValue: false, description: ''),
         booleanParam(name: 'bSaveOnly', defaultValue: false, description: '')
-
-    }
+    ])])
 
     logRotator(5, -1, 1, -1)
 
