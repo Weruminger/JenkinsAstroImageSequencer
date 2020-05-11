@@ -1,8 +1,8 @@
 folder('AstroImager')
 pipelineJob('AstroImager/Sequence') {
     parameters {
-        string(name: 'sName', defaultValue: 'staging', description: '')
-        text(name: 'sJson', defaultValue: """{ "batch" : { "LIGHT_1_120_1-0" :  { "name" : "generic", "filter" : "CLS", "bulp" : 120, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
+        stringParameter(name: 'sName', defaultValue: 'staging', description: '')
+        textParameter(name: 'sJson', defaultValue: """{ "batch" : { "LIGHT_1_120_1-0" :  { "name" : "generic", "filter" : "CLS", "bulp" : 120, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
                    "LIGHT_3_180_1-0" :  { "name" : "generic",  "filter" : "DB", "bulp" : 180, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },    
                    "LIGHT_5_240_1-0" :  { "name" : "generic",  "filter" : "Ha", "bulp" : 240, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : -15, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
                    "BLACK_120_1_0" :  { "file" : "BLACK_120_1_0" , "repeat" : 2 },
@@ -18,7 +18,7 @@ pipelineJob('AstroImager/Sequence') {
  "repeat" : 2
 }""", description: '')
         fileParameter(filepath: './upload.json', description: '')
-        string(name: 'sCount', defaultValue: '1', description: '')
+        stringParameter(name: 'sCount', defaultValue: '1', description: '')
         booleanParam(name: 'sSaveJson', defaultValue: false, description: '')
         booleanParam(name: 'sSaveOnly', defaultValue: false, description: '')
         // choice(name: 'CHOICES', choices: ['one', 'two', 'three'], description: '')
