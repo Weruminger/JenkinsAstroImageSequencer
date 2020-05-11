@@ -1,8 +1,15 @@
 folder('AstroImager')
 pipelineJob('AstroImager/Sequence') {
     parameters {
-        stringParameter(name: 'sName', defaultValue: 'staging', description: '')
-        textParameter(name: 'sJson', defaultValue: """{ "batch" : { "LIGHT_1_120_1-0" :  { "name" : "generic", "filter" : "CLS", "bulp" : 120, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
+
+        properties([parameters([booleanParam(defaultValue: false, description: '', name: 's1'), file(description: '', name: 'fuile1'), string(defaultValue: 'fghfgh', description: '', name: 'text1', trim: false), text(defaultValue: '''sdsdf
+sdfsdf
+sdfsdf''', description: '', name: 'textbox1')]), disableConcurrentBuilds()])
+
+
+
+        string(name: 'sName', defaultValue: 'Default', description: '')
+        text(name: 'sJson', defaultValue: """{ "batch" : { "LIGHT_1_120_1-0" :  { "name" : "generic", "filter" : "CLS", "bulp" : 120, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
                    "LIGHT_3_180_1-0" :  { "name" : "generic",  "filter" : "DB", "bulp" : 180, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },    
                    "LIGHT_5_240_1-0" :  { "name" : "generic",  "filter" : "Ha", "bulp" : 240, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : -15, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
                    "BLACK_120_1_0" :  { "file" : "BLACK_120_1_0" , "repeat" : 2 },
@@ -17,8 +24,8 @@ pipelineJob('AstroImager/Sequence') {
              "camera" : "ZWO ASI533C Pro", "focuser" : "ASI EAF", "filterwheel" : "ASI EFW",  "guider" : "indi_mgen" },
  "repeat" : 2
 }""", description: '')
-        fileParameter(filepath: './upload.json', description: '')
-        stringParameter(name: 'sCount', defaultValue: '1', description: '')
+        file(filepath: './upload.json', description: '')
+        string(name: 'sCount', defaultValue: '1', description: '')
         booleanParam(name: 'sSaveJson', defaultValue: false, description: '')
         booleanParam(name: 'sSaveOnly', defaultValue: false, description: '')
         // choice(name: 'CHOICES', choices: ['one', 'two', 'three'], description: '')
@@ -43,14 +50,14 @@ pipelineJob('AstroImager/Sequence') {
 }
 pipelineJob('AstroImager/EBatch') {
     parameters {
-        stringParam(name: 'bName', defaultValue: 'Default', description: '')
-        stringParam(name: 'bTriggerJob', defaultValue: 'Default', description: '')
+        string(name: 'bName', defaultValue: 'Default', description: '')
+        string(name: 'bTriggerJob', defaultValue: 'Default', description: '')
         text(name: 'bJson', defaultValue: '{"name" : "generic", "filter" : "CLS", "bulp" : 30, "gain" : 100, "offset" : 1, "focus" : 0, "binning" : 1, "dizzle" : true, "delay" : 1, "repeat" : 10, "type" : "LIGHT"  }', description: '')
-        fileParameter(filepath: './uploadBatch.json', description: '')
-        stringParam(name: 'bCount', defaultValue: 'Default', description: '')
-        stringParam(name: 'bFocuser', defaultValue: 'Default', description: '')
-        stringParam(name: 'bFilterWheel', defaultValue: 'Default', description: '')
-        stringParam(name: 'bCamera', defaultValue: 'Default', description: '')
+        file(filepath: './uploadBatch.json', description: '')
+        string(name: 'bCount', defaultValue: 'Default', description: '')
+        string(name: 'bFocuser', defaultValue: 'Default', description: '')
+        string(name: 'bFilterWheel', defaultValue: 'Default', description: '')
+        string(name: 'bCamera', defaultValue: 'Default', description: '')
         booleanParam(name: 'bSaveJson', defaultValue: false, description: '')
         booleanParam(name: 'bSaveOnly', defaultValue: false, description: '')
 
