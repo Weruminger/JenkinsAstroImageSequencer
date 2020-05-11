@@ -61,7 +61,7 @@ def doBatch(bName, bJson, bSaveJson, bTriggerJob, bSaveOnly, bCamera, bFocuser, 
                 bConfig = tempConfig
             }
         }
-        for (int i = 1; (bConfig.repeat as Integer) >= i ; i++){
+        for (int i = 1; (bConfig.repeat as int) >= i ; i++){
             script {
                 currentBuild.description = "${bTriggerJob} [${bName}#${i} of ${bConfig.repeat}]"
             }
