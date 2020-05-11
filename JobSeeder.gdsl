@@ -3,8 +3,8 @@ import javaposse.jobdsl.dsl.helpers.BuildParametersContext.*
 
 folder('AstroImager')
 pipelineJob('AstroImager/Sequence') {
-    properties([ parameters ([stringParam('sName', 'Default'),
-                              textParam('sJson', '''{ "batch" : { "LIGHT_1_120_1-0" :  { "name" : "generic", "filter" : "CLS", "bulp" : 120, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
+    properties([ parameters ([string('sName', 'Default'),
+                              text('sJson', '''{ "batch" : { "LIGHT_1_120_1-0" :  { "name" : "generic", "filter" : "CLS", "bulp" : 120, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
                    "LIGHT_3_180_1-0" :  { "name" : "generic",  "filter" : "DB", "bulp" : 180, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },    
                    "LIGHT_5_240_1-0" :  { "name" : "generic",  "filter" : "Ha", "bulp" : 240, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : -15, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
                    "BLACK_120_1_0" :  { "file" : "BLACK_120_1_0" , "repeat" : 2 },
@@ -19,8 +19,8 @@ pipelineJob('AstroImager/Sequence') {
              "camera" : "ZWO ASI533C Pro", "focuser" : "ASI EAF", "filterwheel" : "ASI EFW",  "guider" : "indi_mgen" },
  "repeat" : 2
 }'''),
-                              fileParam('./upload.json'),
-                              stringParam('sCount',  '1'),
+                              file('./upload.json'),
+                              string('sCount',  '1'),
                               booleanParam('sSaveJson',  false),
                               booleanParam('sSaveOnly',  false)]),
     disableConcurrentBuilds()])
