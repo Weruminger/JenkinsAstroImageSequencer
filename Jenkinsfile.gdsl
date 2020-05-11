@@ -1,7 +1,7 @@
 node {
 //    ws("D:/casdev/MbDGithubConnector") {
         checkout scm
-        def jobDslScript = readFile "jobseeder.gdsl"
+        def jobDslScript = readFile "JobSeeder.gdsl"
         jobDsl removedJobAction: 'DISABLE',
                 removedViewAction: 'DELETE',
                 scriptText: jobDslScript
