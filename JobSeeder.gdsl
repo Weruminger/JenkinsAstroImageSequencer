@@ -1,13 +1,8 @@
+import hudson.model.*
+
 folder('AstroImager')
 pipelineJob('AstroImager/Sequence') {
     parameters {
-
-        properties([parameters([booleanParam(defaultValue: false, description: '', name: 's1'), file(description: '', name: 'fuile1'), string(defaultValue: 'fghfgh', description: '', name: 'text1', trim: false), text(defaultValue: '''sdsdf
-sdfsdf
-sdfsdf''', description: '', name: 'textbox1')]), disableConcurrentBuilds()])
-
-
-
         string(name: 'sName', defaultValue: 'Default', description: '')
         text(name: 'sJson', defaultValue: """{ "batch" : { "LIGHT_1_120_1-0" :  { "name" : "generic", "filter" : "CLS", "bulp" : 120, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },
                    "LIGHT_3_180_1-0" :  { "name" : "generic",  "filter" : "DB", "bulp" : 180, "gain" : 1, "offset" : 0, "binning" : 1, "focus" : 0, "delay" : 1, "repeat" : 4, "type" : "LIGHT"  },    
