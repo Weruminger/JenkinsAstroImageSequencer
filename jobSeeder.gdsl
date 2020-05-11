@@ -1,0 +1,64 @@
+folder('AstroImager')
+pipelineJob('AstroImager/Sequence') {
+    parameters {
+        string(name: 'sName', defaultValue: 'staging', description: '')
+        text(name: 'sJson', defaultValue: """ 
+        
+        
+        """, description: '')
+        booleanParam(name: 'sSaveJson', defaultValue: false, description: '')
+        choice(name: 'CHOICES', choices: ['one', 'two', 'three'], description: '')
+        fileParameter(name: 'CHOICES', choices: ['one', 'two', 'three'], description: '')
+    
+        stringParam('sName', '')
+        stringParam('sJson', '')
+        switchParam('sSaveJson', '')
+        stringParam('pullRequest', '')
+        stringParam('state', '')
+        stringParam('baseBranch', '')
+    }
+
+    logRotator(5, -1, 1, -1)
+
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    branch('master')
+                    remote {
+                        credentials('GitHubWerumingerI')
+                        url('https://github.com/Weruminger/JenkinsAstroImageSequencer')
+                    }
+                }
+            }
+            scriptPath('src/Sequence.gdsl')
+        }
+    }
+}
+pipelineJob('AstroImager/EBatch') {
+    parameters {
+        stringParam('action', '')
+        stringParam('comment', '')
+        stringParam('user', '')
+        stringParam('pullRequest', '')
+        stringParam('state', '')
+        stringParam('baseBranch', '')
+    }
+
+    logRotator(5, -1, 1, -1)
+
+    definition {
+        cpsScm {
+            scm {
+                git {
+                    branch('master')
+                    remote {
+                        credentials('GitHubWerumingerI')
+                        url('https://github.com/Weruminger/JenkinsAstroImageSequencer')
+                    }
+                }
+            }
+            scriptPath('src/EBatch.gdsl')
+        }
+    }
+}
