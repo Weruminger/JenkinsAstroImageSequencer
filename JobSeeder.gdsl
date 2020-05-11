@@ -1,4 +1,5 @@
 import hudson.model.*
+import javaposse.jobdsl.dsl.helpers.BuildParametersContext.*
 
 folder('AstroImager')
 pipelineJob('AstroImager/Sequence') {
