@@ -45,16 +45,16 @@ pipelineJob('AstroImager/Sequence') {
 }
 pipelineJob('AstroImager/EBatch') {
     parameters {
-        stringParam(name: 'bName', defaultValue: 'Default', description: '')
-        stringParam(name: 'bTriggerJob', defaultValue: 'Default', description: '')
-        textParam(name: 'bJson', defaultValue: '{"name" : "generic", "filter" : "CLS", "bulp" : 30, "gain" : 100, "offset" : 1, "focus" : 0, "binning" : 1, "dizzle" : true, "delay" : 1, "repeat" : 10, "type" : "LIGHT"  }', description: '')
-        fileParam(name: './uploadBatch.json', description: '')
-        stringParam(name: 'bCount', defaultValue: 'Default', description: '')
-        stringParam(name: 'bFocuser', defaultValue: 'Default', description: '')
-        stringParam(name: 'bFilterWheel', defaultValue: 'Default', description: '')
-        stringParam(name: 'bCamera', defaultValue: 'Default', description: '')
-        booleanParam(name: 'bSaveJson', defaultValue: false, description: '')
-        booleanParam(name: 'bSaveOnly', defaultValue: false, description: '')
+        stringParam( 'bName',  'Default')
+        stringParam( 'bTriggerJob',  'Default')
+        textParam( 'bJson', '{"name" : "generic", "filter" : "CLS", "bulp" : 30, "gain" : 100, "offset" : 1, "focus" : 0, "binning" : 1, "dizzle" : true, "delay" : 1, "repeat" : 10, "type" : "LIGHT"  }')
+        fileParam('./uploadBatch.json')
+        stringParam('bCount', 'Default')
+        stringParam('bFocuser', 'Default')
+        stringParam('bFilterWheel', 'Default')
+        stringParam('bCamera', 'Default')
+        booleanParam('bSaveJson', false)
+        booleanParam('bSaveOnly', false)
     }
 
     logRotator(5, -1, 1, -1)
