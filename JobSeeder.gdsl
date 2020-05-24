@@ -74,22 +74,22 @@ pipelineJob('AstroImager/EBatch') {
         }
     }
 }
-pipelineJob("AstroImager/PiCamBatch") {
-    description("Automated Image Batch Job to be used wit Pi Camera")
+pipelineJob('AstroImager/PiCamBatch') {
+    description('Automated Image Batch Job to be used wit Pi Camera')
     keepDependencies(false)
     parameters {
-        stringParam("NAME", "OBJECT_NNN_XXX_EEE_GGG_TTT_DDD")
-        stringParam("EXPOSURE", "6")
-        choiceParam("TYPE", ["LIGHT", "DARK", "BIAS", "FLAT", "FLATBIAS"])
-        stringParam("GAIN", '200')
-        booleanParam("BAYER", true)
-        choiceParam("RESOLUTION", ["1640x1232", "3280x2464", "1280x720", "640x480"])
-        choiceParam("OUTPUT", ["jpeg", "png", "gif", "bmp", "yuv", "rgb", "rgba", "bgr", "bgra", "raw"])
-        booleanParam("ARCHIVEIMAGES", true)
-        stringParam("COUNT", '1')
-        stringParam("IMAGEFOLDER", "out/TTT")
-        choiceParam("RUNMODE", ["SCRIPT", "FILE", "TEST"])
-        stringParam("WORKSPASE", "/var/lib/jenkins/workspace/PiCamera/samples", "path to worspace" )
+        stringParam('NAME', 'OBJECT_NNN_XXX_EEE_GGG_TTT_DDD')
+        stringParam('EXPOSURE', '6')
+        choiceParam('TYPE', ['LIGHT', 'DARK', 'BIAS', 'FLAT', 'FLATBIAS'])
+        stringParam('GAIN', '200')
+        booleanParam('BAYER', true)
+        choiceParam('RESOLUTION', ['1640x1232', '3280x2464', '1280x720', '640x480'])
+        choiceParam('OUTPUT', ['jpeg', 'png', 'gif', 'bmp', 'yuv', 'rgb', 'rgba', 'bgr', 'bgra', 'raw'])
+        booleanParam('ARCHIVEIMAGES', true)
+        stringParam('COUNT', '1')
+        stringParam('IMAGEFOLDER', 'out/TTT')
+        choiceParam('RUNMODE', ['SCRIPT', 'FILE', 'TEST'])
+        stringParam('WORKSPASE', '/var/lib/jenkins/workspace/PiCamera/samples' )
     }
     logRotator(5, -1, 1, -1)
     definition {
