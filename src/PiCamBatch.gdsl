@@ -2,6 +2,7 @@
 String type,resolution,output, doOutput, PyScript, targetFolder, fileName
 float expose
 int doExpose, gain, imagecount, fract, sensormode, doTimeout
+boolean bayer
 stage('data preperation') {
     expose = Float.parseFloat((env.EXPOSURE ?: '10.0').replaceAll(",", ""))
     type = "${env.TYPE ?: 'LIGHT'}"
@@ -19,7 +20,6 @@ stage('data preperation') {
     if (output == 'jpeg') {
         doOutput = "format='jpeg', bayer=${bayer ? 'True' : 'False'}, thumbnail=None, quality=60"
     } else {
-        bayer = false
         doOutput = "format='${output}'"
     }
     fract = 1
