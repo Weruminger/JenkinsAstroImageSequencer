@@ -1,0 +1,105 @@
+
+String type,resolution,output, doOutput, PyScript, targetFolder, fileName
+float expose
+int doExpose, gain, imagecount, fract, sensormode, doTimeout
+stage('data preperation') {
+    expose = Float.parseFloat((env.EXPOSURE ?: '10.0').replaceAll(",", ""))
+    type = "${env.TYPE ?: 'LIGHT'}"
+    gain = "${env.GAIN ?: '400'}".toInteger()
+    imagecount = "${env.COUNT ?: '1'}".toInteger()
+    bayer = "${env.BAYER ?: 'true'}".toBoolean()
+    resolution = "[${env.RESOLUTION.replace('x', ',')}]"
+    output = "${env.OUTPUT ?: 'jpeg'}"
+    Map modeLookup = ['1640x1232': 4,
+                      '3280x2464': 2,
+                      '1280x720' : 6,
+                      '640x480'  : 7]
+    sensormode = modeLookup[env.RESOLUTION] ?: 4
+
+    if (output == 'jpeg') {
+        doOutput = "format='jpeg', bayer=${bayer ? 'True' : 'False'}, thumbnail=None, quality=60"
+    } else {
+        bayer = false
+        doOutput = "format='${output}'"
+    }
+    fract = 1
+    if (expose >= 1) {
+        fract = expose.toInteger()
+    }
+    doExpose = expose * 1000 * 1000
+
+    targetFolder = (env.IMAGEFOLDER ?: '/var/lib/jenkins/workspace/PiCamera/samples').toString()
+    targetFolder = targetFolder.replace('WWW', env.WORKSPACE ?: '').replace('TTT', env.TYPE ?: '')
+    fileName = (env.NAME ?: 'IMAGE').toString()
+/*
+XXX := count index
+NNN := build number
+EEE := Exposure time
+GGG := Gain / ISO
+TTT := Type (LIGHT,DARK,BIAS,FLAT,FLATBIAS)
+DDD := Date of exposure
+*/
+    fileName = fileName.replace('XXX', '{counter:03d}').replace('TTT', env.TYPE ?: '').replace('NNN', env.BUILD_NUMBER ?: '').replace('GGG', env.GAIN ?: '').replace('EEE', env.EXPOSURE ?: '').replace('DDD', new Date().format("yyyMMdd"))
+    doTimeout = (expose * 3.5 * imagecount) + 60
+}
+node(){
+    dir(targetFolder){
+        stage('init script'){
+            sh('sudo usermod -aG video jenkins')
+            sh('whoami')
+            PyScript = """from picamera import PiCamera
+import numpy as np
+import time
+from datetime import datetime
+from fractions import Fraction
+
+print 'init done'
+with PiCamera() as cam:
+    lst_shape = cam._lens_shading_table_shape()
+print 'shape done'
+lst = np.zeros(lst_shape, dtype=np.uint8)
+lst[...] = 32 # NB 32 corresponds to unity gain
+print 'shape defined'
+with PiCamera(lens_shading_table=lst,resolution = ${resolution}, sensor_mode = ${sensormode},framerate = Fraction(1, ${fract}) ) as cam:
+    print 'cam opened'
+    cam.exposure_mode = 'verylong' # 'off'
+    print 'mode set'
+    cam.shutter_speed = ${doExpose}
+    print 'shutter set'
+    cam.iso = ${gain}
+    print 'iso set'
+    time.sleep(10)
+    print cam.exposure_speed
+    print cam.shutter_speed
+    for cnt, _ in enumerate(cam.capture_continuous('${fileName}.${output}', burst=True, ${doOutput})):
+        print 'captured: {c:03d}'.format(c=cnt)
+        if (cnt >= ${imagecount} - 1):
+            break
+    print 'capture done'
+    cam.framerate = Fraction(1, 1)
+    time.sleep(2)
+    cam.close()
+exit()
+"""
+            writeFile file: "./pyScript${env.BUILD_NUMBER}.py", text: PyScript
+            archiveArtifacts artifacts: '*.py'
+        }
+        stage('execute script'){
+            timeout(time: doTimeout, unit: 'SECONDS'){
+                if (env.RUNMODE == 'SCRIPT'){
+                    sh("echo \"${PyScript}\" | python")
+                } else if (env.RUNMODE == 'FILE'){
+                    sh("python ./pyScript${env.BUILD_NUMBER}.py")
+                }else{
+                    echo 'skip'
+                }
+            }
+        }
+        stage('archive artifacts'){
+            if ("${env.ARCHIVEIMAGES}" == 'true'){
+                archiveArtifacts artifacts: '*.jpg, *.raw, *.yuv, *.fits, *.fit, *.tiff, *.tif'
+                archiveArtifacts artifacts: '*.jpeg, *.bmp, *.png, *.gif, *.rgb, *.rgba, *.bgr, *.bgra'
+            }
+        }
+    }
+}

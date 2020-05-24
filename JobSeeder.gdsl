@@ -74,3 +74,65 @@ pipelineJob('AstroImager/EBatch') {
         }
     }
 }
+pipelineJob("AstroImager/PiCamBatch") {
+    description("Automated Image Batch Job to be used wit Pi Camera")
+    keepDependencies(false)
+    parameters {
+        stringParam("NAME", "OBJECT_NNN_XXX_EEE_GGG_TTT_DDD", """Name for the file. 
+Substitutions:
+XXX := count index
+NNN := build number
+EEE := Exposure time
+GGG := Gain / ISO
+TTT := Type (LIGHT,DARK,BIAS,FLAT,FLATBIAS)
+DDD := Date of exposure""")
+        stringParam("EXPOSURE", 6, """Exposure Time in seconds
+Limits: 
+    PiCam V1 Max 6 Sec.
+    PiCam V2 Max 10 Sec.""")
+        choiceParam("TYPE", ["LIGHT", "DARK", "BIAS", "FLAT", "FLATBIAS"], "")
+        stringParam("GAIN", 200, "Gain / ISO value")
+        booleanParam("BAYER", true, """Raw Data in the EXIF MetaData
+only wit JPEG output format""")
+        choiceParam("RESOLUTION", ["1640x1232", "3280x2464", "1280x720", "640x480"], """1640x1232 := Bin2x2 4:3 Deep Sky and Stars
+3280x2464 := Bin1x1 4:3 Deep Sky and Moon
+1280x720 := Bin2x2 16:9 30 Frames/second Planets / Moon 
+640x480 := Bin2x2 4:3 120 Frames/second Planets and Moon""")
+        choiceParam("OUTPUT", ["jpeg", "png", "gif", "bmp", "yuv", "rgb", "rgba", "bgr", "bgra", "raw"], "Output Format wwhile raw is NOT an untouched bayer format. jpeg with  BAYER Flag shall be preferred")
+        booleanParam("ARCHIVEIMAGES", true, "If true,all images in the workspace root will be archived.")
+        stringParam("COUNT", 1, "Number of exposure to take")
+        stringParam("IMAGEFOLDER", "out/TTT", """The target folder for the images.
+Substitution:
+WWW := current workspace
+TTT := image type""")
+        choiceParam("RUNMODE", ["SCRIPT", "FILE", "TEST"], "Run mode for python in this this pipeline")
+        stringParam("WORKSPASE", "/var/lib/jenkins/workspace/PiCamera/samples", "path to worspace" )
+    }
+    definition {
+        definition {
+            cpsScm {
+                scm {
+                    git {
+                        branch('master')
+                        remote {
+                            credentials('GitHubWerumingerI')
+                            url('https://github.com/Weruminger/JenkinsAstroImageSequencer')
+                        }
+                    }
+                }
+                scriptPath('src/PiCamBatch.gdsl')
+            }
+        }
+    }
+    disabled(false)
+    configure {
+        it / 'properties' / 'jenkins.model.BuildDiscarderProperty' {
+            strategy {
+                'daysToKeep'('14')
+                'numToKeep'('-1')
+                'artifactDaysToKeep'('7')
+                'artifactNumToKeep'('-1')
+            }
+        }
+    }
+}
