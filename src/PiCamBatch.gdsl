@@ -102,24 +102,25 @@ exit()
         }
         stage('clean workspace'){
             if ("${env.CLEANWS}" == 'true'){
-                publishers {
-                    cleanWs { // Clean after build
-                        cleanWhenAborted(false)
-                        cleanWhenFailure(false)
-                        cleanWhenNotBuilt(false)
-                        cleanWhenSuccess(true)
-                        cleanWhenUnstable(true)
-                        deleteDirs(true)
-                        notFailBuild(true)
-                        disableDeferredWipeout(true)
-                        patterns {
-                            pattern {
-                                type('EXCLUDE')
-                                pattern('**/*.*')
-                            }
-                        }
-                    }
-                }
+                cleanWs cleanWhenAborted: false, cleanWhenNotBuilt: false, deleteDirs: true, notFailBuild: true, patterns: [[pattern: '**/*.*', type: 'INCLUDE']]
+                //publishers {
+                    //cleanWs { // Clean after build
+                        //cleanWhenAborted(false)
+                        //cleanWhenFailure(false)
+                        //cleanWhenNotBuilt(false)
+                        //cleanWhenSuccess(true)
+                        //cleanWhenUnstable(true)
+                        //deleteDirs(true)
+                        //notFailBuild(true)
+                        //disableDeferredWipeout(true)
+                        //patterns {
+                            //pattern {
+                                //type('EXCLUDE')
+                                //pattern('**/*.*')
+                            //}
+                        //}
+                    //}
+                //}
             }
         }
     }
