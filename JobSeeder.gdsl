@@ -91,8 +91,7 @@ pipelineJob('AstroImager/PiCamBatch') {
         choiceParam('RUNMODE', ['SCRIPT', 'FILE', 'TEST'])
         stringParam('WORKSPASE', '/var/lib/jenkins/workspace/PiCamera/samples' )
     }
-    logRotator(5, -1, 1, -1)
-    // definition {
+    logRotator(5, -1, 1, -1)  
         definition {
             cpsScm {
                 scm {
@@ -107,16 +106,15 @@ pipelineJob('AstroImager/PiCamBatch') {
                 scriptPath('src/PiCamBatch.gdsl')
             }
         }
-    // }
     disabled(false)
-//   configure {
-//       it / 'properties' / 'jenkins.model.BuildDiscarderProperty' {
-//           strategy {
-//               'daysToKeep'('14')
-//               'numToKeep'('-1')
-//               'artifactDaysToKeep'('7')
-//               'artifactNumToKeep'('-1')
-//           }
-//       }
-//   }
+    configure {
+        it / 'properties' / 'jenkins.model.BuildDiscarderProperty' {
+            strategy {
+               'daysToKeep'('14')
+               'numToKeep'('-1')
+               'artifactDaysToKeep'('7')
+               'artifactNumToKeep'('-1')
+            }
+        }
+    }
 }
