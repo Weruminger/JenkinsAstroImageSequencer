@@ -97,8 +97,7 @@ exit()
         }
         stage('archive artifacts'){
             if ("${env.ARCHIVEIMAGES}" == 'true'){
-                archiveArtifacts artifacts: '*.jpg, *.raw, *.yuv, *.fits, *.fit, *.tiff, *.tif'
-                archiveArtifacts artifacts: '*.jpeg, *.bmp, *.png, *.gif, *.rgb, *.rgba, *.bgr, *.bgra'
+                archiveArtifacts artifacts: 'out/**/*.*'
             }
         }
     }
