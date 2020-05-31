@@ -92,7 +92,7 @@ pipelineJob('AstroImager/PiCamBatch') {
         stringParam('WORKSPASE', '/var/lib/jenkins/workspace/PiCamera/samples' )
     }
     logRotator(5, -1, 1, -1)
-    definition {
+    // definition {
         definition {
             cpsScm {
                 scm {
@@ -107,7 +107,7 @@ pipelineJob('AstroImager/PiCamBatch') {
                 scriptPath('src/PiCamBatch.gdsl')
             }
         }
-    }
+    // }
     disabled(false)
 //   configure {
 //       it / 'properties' / 'jenkins.model.BuildDiscarderProperty' {
